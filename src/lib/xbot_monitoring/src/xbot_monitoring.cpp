@@ -178,8 +178,15 @@ void setupMqttClient() {
                           std::string(":") + std::to_string(1883);
 
         try {
-            client_ = std::make_shared<mqtt::async_client>(
-                    uri, "xbot_monitoring");
+            std::string external_client_id =
+                    "ext_xm_" + std::to_string(std::hash<std::string>{}(external_mqtt_topic_prefix));
+            
+            if (external_client_id.length() > 23) {
+                external_client_id = external_client_id.substr(0, 23);
+            }
+            
+            client_external_ = std::make_shared<mqtt::async_client>(
+                    uri, external_client_id);
             mqtt_callback.setMqttClient(client_, "");
             client_->set_callback(mqtt_callback);
 
